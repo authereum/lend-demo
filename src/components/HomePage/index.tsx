@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import HeroMessage from '../../common/HeroMessage'
+import HeroMessage from '../HeroMessage'
 
 const HomePage: FunctionComponent<{}> = () => {
   return (

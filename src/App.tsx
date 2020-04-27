@@ -1,8 +1,4 @@
 import React from 'react'
-import './App.css'
-import Header from './components/common/Header'
-import HomePage from './components/pages/HomePage/HomePage'
-import ComponentPage from './components/pages/ComponentPage/ComponentPage'
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,7 +11,13 @@ import {
   ThemeOptions
 } from '@material-ui/core/styles'
 
+import './App.css'
 import theme from './theme'
+
+import Header from './components/Header'
+import HomePage from './components/HomePage'
+import ComponentPage from './components/ComponentPage'
+import TransactionComposerPage from './components/TransactionComposerPage'
 
 function App() {
   return (
@@ -27,7 +29,7 @@ function App() {
           <Header />
 
           <Switch>
-            <Route path="/" exact={true} component={ HomePage } />
+            <Route path="/" exact={true} component={ TransactionComposerPage } />
             <Route path="/components"  component={ ComponentPage } />
           </Switch>
         </div>
