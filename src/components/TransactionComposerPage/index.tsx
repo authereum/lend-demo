@@ -1,8 +1,10 @@
-import React, { FunctionComponent, useContext } from 'react'
+import React, { FunctionComponent, useContext, ChangeEvent } from 'react'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
+import TextField from '@material-ui/core/TextField'
 import { makeStyles } from '@material-ui/core'
+import times from 'lodash.times'
 
 import ContractTransactionForm from './ContractTransactionForm'
 import {
@@ -12,18 +14,20 @@ import {
 
 const useStyles = makeStyles(() => ({
   root: {
-    margin: '15% 0',
+    marginTop: '5.0rem',
     textAlign: 'center'
-  },
-  textField: {
-    width: '35.0rem'
   }
 }))
 
 const TransactionComposerContent: FunctionComponent<{}> = () => {
+  const { state, dispatch } = useContext(TransactionComposerContext)
 
-  const { dispatch } = useContext(TransactionComposerContext)
-
+  const setTransactionCount = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: 'setTransactionCount',
+      payload: e.target.value
+    })
+  }
   const sendTransaction = () => { dispatch({ type: 'sendTransaction' }) }
 
   return (
@@ -35,7 +39,20 @@ const TransactionComposerContent: FunctionComponent<{}> = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <ContractTransactionForm />
+          <TextField
+            label="Number of transactions"
+            value={state.transactionCount}
+            onChange={setTransactionCount}
+          />
+        </Grid>
+        <Grid item>
+          { times(parseInt(state.transactionCount), (index) =>
+            <ContractTransactionForm index={index} key={index}/>
+          )}
+          
+          {/* { state.contractTransactions.map( (_, index) => 
+            <ContractTransactionForm index={index} key={index}/>
+          )} */}
         </Grid>
         <Grid item>
           <Button variant="outlined" onClick={sendTransaction}>

@@ -7,6 +7,7 @@ import React, {
 import * as ethers from 'ethers'
 import { useAuthereumProvider } from '../../hooks'
 import Address from '../../models/Address'
+import times from 'lodash.times'
 
 interface Action {
   type: string
@@ -20,7 +21,8 @@ interface ContractTransactionFormState {
 }
 
 interface TransactionComposerState {
-  contractTransaction: ContractTransactionFormState,
+  transactionCount: string,
+  contractTransactions: ContractTransactionFormState[],
   provider: any
 }
 
@@ -31,7 +33,7 @@ interface IContextProps {
 
 const TransactionComposerContext = createContext({} as IContextProps)
 
-const initialState: ContractTransactionFormState ={
+const initialState: ContractTransactionFormState = {
   to: "0x2a1530c4c41db0b0b2bb646cb5eb1a67b7158667",
   functionSignature: "tokenToTokenSwapInput(uint256 tokens_sold, uint256 min_tokens_bought, uint256 min_eth_bought, uint256 deadline, address token_addr)",
   inputs: "1000000000000000000,4000000000,1,1597957824,0x5d3a536e4d6dbd6114cc1ead35777bab948e3643"
@@ -42,16 +44,28 @@ const reducer = (state: TransactionComposerState, action: Action) => {
     case 'update':
       return {
         ...state,
-        contractTransaction: {
-          ...state.contractTransaction,
-          ...action.payload
-        }
-      }
+        contractTransactions: state.contractTransactions.map( (contractTransactionFormState, index) => {
+          return index !== action.payload.index ? contractTransactionFormState : {
+            ...contractTransactionFormState,
+            ...action.payload.update
+          } as ContractTransactionFormState
+        })
+      } as TransactionComposerState
     case 'sendTransaction':
       state.provider.sendTransaction(
-        formatTransaction(state.contractTransaction)
+        formatTransaction(state.contractTransactions[0])
       )
       return state
+    case 'setTransactionCount':
+      let transactionCount
+      if (action.payload) {
+        const count = parseInt(action.payload)
+        transactionCount = count.toString()
+      }
+      return {
+        ...state,
+        transactionCount
+      } as TransactionComposerState
     default:
       throw new Error(`Unrecognized action ${action.type}`)
   }
@@ -97,7 +111,8 @@ const TransactionComposerProvider: FunctionComponent<{}> = ({ children }) => {
   const provider = useAuthereumProvider()
 
   const [state, dispatch] = useReducer(reducer, {
-    contractTransaction: initialState,
+    transactionCount: '2',
+    contractTransactions: times(10, () => initialState),
     provider
   })
 

@@ -17,26 +17,33 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-const ContractTransactionForm: FunctionComponent<{}> = () => {
+interface ContractTransactionFormProps {
+  index: number
+}
+
+const ContractTransactionForm: FunctionComponent<ContractTransactionFormProps> = ({ index }) => {
   const { state, dispatch } = useContext(TransactionComposerContext)
 
   const updateField = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: 'update',
       payload: {
-        [e.target.name]: e.target.value
+        index,
+        update: {
+          [e.target.name]: e.target.value
+        }
       }
     })
   }
 
   const styles = useStyles()
-  const contractTransaction = state.contractTransaction
+  const contractTransaction = state.contractTransactions[index]
   return (
     <div className={styles.root}>
       <Grid container direction="column" spacing={2}>
         <Grid item>
           <Typography variant="h3" color="primary">
-            Transaction
+            Transaction [{index}]
           </Typography>
         </Grid>
         <Grid item>
