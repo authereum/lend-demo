@@ -16,7 +16,7 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.4",
     "@types/url-parse": "^1.4.3",
-    "authereum": "0.0.4-beta.133",
+    "authereum": "0.0.4-beta.135",
     "ethers": "^4.0.47",
     "lodash.times": "^4.3.2",
     "normalize-hex": "0.0.6",

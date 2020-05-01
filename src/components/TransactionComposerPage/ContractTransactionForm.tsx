@@ -38,6 +38,10 @@ const ContractTransactionForm: FunctionComponent<ContractTransactionFormProps> =
 
   const styles = useStyles()
   const contractTransaction = state.contractTransactions[index]
+  if (!contractTransaction) {
+    return <></>
+  }
+
   return (
     <div className={styles.root}>
       <Grid container direction="column" spacing={2}>
@@ -73,6 +77,24 @@ const ContractTransactionForm: FunctionComponent<ContractTransactionFormProps> =
             onChange={updateField}
           />
         </Grid>
+        <Grid item>
+          <TextField
+            className={styles.textField}
+            name="value"
+            label="Value"
+            value={contractTransaction.value}
+            onChange={updateField}
+          />
+        </Grid>
+        {contractTransaction.transaction ? 
+          <Grid item>
+            <Typography variant="body1" style={{ wordBreak: "break-all" }}>
+              {contractTransaction.transaction}
+              { console.log('transaction: ', contractTransaction.transaction)}
+            </Typography>
+          </Grid> :
+          <></>
+        }
       </Grid>
     </div>
   )

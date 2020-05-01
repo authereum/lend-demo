@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 import Card from '@material-ui/core/Card'
+import GradientButton from '../GradientButton'
 
 const ComponentPage: FunctionComponent<{}> = () => {
   return (
@@ -36,6 +37,7 @@ const ComponentPage: FunctionComponent<{}> = () => {
         </Typography>
         </Box>
       </Card>
+      <GradientButton label="Lend"/>
     </div>
   )
 }

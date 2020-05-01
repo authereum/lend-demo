@@ -1,8 +1,5 @@
 import React, {
   FunctionComponent,
-  useState,
-  useContext,
-  createContext,
   MouseEvent
 } from 'react'
 import Grid from '@material-ui/core/Grid'
@@ -59,7 +56,7 @@ const Header: FunctionComponent<{}> = () => {
     >
       <Grid item>
         <a href="/" className={styles.imgContainer}>
-          <img className={styles.img} src={logo} />
+          <img className={styles.img} src={logo} alt="Authereum"/>
         </a>
       </Grid>
       <Grid item>

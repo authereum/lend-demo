@@ -2,22 +2,19 @@ import React from 'react'
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
 } from 'react-router-dom'
 import {
-  ThemeProvider,
-  createMuiTheme,
-  ThemeOptions
+  ThemeProvider
 } from '@material-ui/core/styles'
 
 import './App.css'
 import theme from './theme'
 
 import Header from './components/Header'
-import HomePage from './components/HomePage'
 import ComponentPage from './components/ComponentPage'
 import TransactionComposerPage from './components/TransactionComposerPage'
+import LendPage from './components/LendPage'
 
 function App() {
   return (
@@ -30,6 +27,7 @@ function App() {
 
           <Switch>
             <Route path="/" exact={true} component={ TransactionComposerPage } />
+            <Route path="/lend"  component={ LendPage } />
             <Route path="/components"  component={ ComponentPage } />
           </Switch>
         </div>

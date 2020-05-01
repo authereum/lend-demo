@@ -18,6 +18,9 @@ interface ContractTransactionFormState {
   to: string
   functionSignature: string
   inputs: string
+  value: string
+  transaction?: string
+  error?: string
 }
 
 interface TransactionComposerState {
@@ -31,30 +34,29 @@ interface IContextProps {
   dispatch: Dispatch<Action>
 }
 
-const TransactionComposerContext = createContext({} as IContextProps)
+export const TransactionComposerContext = createContext({} as IContextProps)
 
 const initialState: ContractTransactionFormState = {
   to: "0x2a1530c4c41db0b0b2bb646cb5eb1a67b7158667",
   functionSignature: "tokenToTokenSwapInput(uint256 tokens_sold, uint256 min_tokens_bought, uint256 min_eth_bought, uint256 deadline, address token_addr)",
-  inputs: "1000000000000000000,4000000000,1,1597957824,0x5d3a536e4d6dbd6114cc1ead35777bab948e3643"
+  inputs: "1000000000000000000,4000000000,1,1597957824,0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
+  value: "0"
 }
 
 const reducer = (state: TransactionComposerState, action: Action) => {
   switch (action.type) {
     case 'update':
-      return {
-        ...state,
-        contractTransactions: state.contractTransactions.map( (contractTransactionFormState, index) => {
-          return index !== action.payload.index ? contractTransactionFormState : {
-            ...contractTransactionFormState,
-            ...action.payload.update
-          } as ContractTransactionFormState
-        })
-      } as TransactionComposerState
+      return updateReducer(state, action)
     case 'sendTransaction':
-      state.provider.sendTransaction(
-        formatTransaction(state.contractTransactions[0])
-      )
+      try {
+        const transactions = state.contractTransactions.slice(0, parseInt(state.transactionCount))
+        state.provider.sendTransactionBatch(transactions.map( contractTransactions =>
+          formatTransaction(contractTransactions) 
+        ))
+      } catch (err) {
+        console.error(err)
+      }
+
       return state
     case 'setTransactionCount':
       let transactionCount
@@ -71,9 +73,44 @@ const reducer = (state: TransactionComposerState, action: Action) => {
   }
 }
 
-const encodeTransactionData = (state: ContractTransactionFormState): any => {
+const updateReducer = (state: TransactionComposerState, action: Action) => {
+  let contractTransaction = state.contractTransactions[action.payload.index]
+  contractTransaction = {
+    ...contractTransaction,
+    ...action.payload.update,
+  }
+  let formattedTransactionObject: Object
+  try {
+    formattedTransactionObject = {
+      transaction: JSON.stringify(formatTransaction(contractTransaction), null, 2),
+      error: undefined
+    }
+  } catch (err) {
+    formattedTransactionObject = {
+      transaction: undefined,
+      error: err.message
+    }
+  }
+
+  return {
+    ...state,
+    contractTransactions: state.contractTransactions.map( (contractTransactionFormState, index) => {
+      if (index !== action.payload.index) {
+        return contractTransactionFormState
+      }
+
+      return {
+        ...contractTransactionFormState,
+        ...action.payload.update,
+        ...formattedTransactionObject
+      } as ContractTransactionFormState
+    })
+  }
+}
+
+const encodeTransactionData = (state: ContractTransactionFormState): string => {
   if (!state.functionSignature || state.functionSignature === '') {
-    throw new Error('Missing function signature')
+    return ''
   }
 
   // Create an Ethers Interface for the function signature
@@ -83,7 +120,7 @@ const encodeTransactionData = (state: ContractTransactionFormState): any => {
   // Parse comma separated inputs
   let inputs: string[] = []
   if (state.inputs && state.inputs.length > 0) {
-    inputs = state.inputs.trim().split(',')
+    inputs = state.inputs.replace(/\s/g,'').split(',')
   }
 
   // Encode transaction parameters
@@ -97,7 +134,8 @@ const formatTransaction = (state: ContractTransactionFormState): any => {
     transaction = {
       to: (new Address(state.to)).toString(),
       data: encodeTransactionData(state),
-      value: '0'
+      value: ethers.utils.parseEther(state.value).toString(),
+      gasLimit: '700000'
     }
   } catch (err) {
     console.error(err)
@@ -107,7 +145,13 @@ const formatTransaction = (state: ContractTransactionFormState): any => {
   return transaction
 }
 
-const TransactionComposerProvider: FunctionComponent<{}> = ({ children }) => {
+// const formatTransactionString = (transaction: any): string => {
+//   let transactionString = `{\n`
+//     transaction.keys.forEach()
+//   transactionString += `}`
+// }
+
+export const TransactionComposerProvider: FunctionComponent<{}> = ({ children }) => {
   const provider = useAuthereumProvider()
 
   const [state, dispatch] = useReducer(reducer, {
@@ -122,5 +166,3 @@ const TransactionComposerProvider: FunctionComponent<{}> = ({ children }) => {
     </TransactionComposerContext.Provider>
   )
 }
-
-export { TransactionComposerContext, TransactionComposerProvider }

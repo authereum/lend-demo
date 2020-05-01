@@ -46,13 +46,9 @@ const TransactionComposerContent: FunctionComponent<{}> = () => {
           />
         </Grid>
         <Grid item>
-          { times(parseInt(state.transactionCount), (index) =>
+          { times(Math.min(parseInt(state.transactionCount), 10), (index) =>
             <ContractTransactionForm index={index} key={index}/>
           )}
-          
-          {/* { state.contractTransactions.map( (_, index) => 
-            <ContractTransactionForm index={index} key={index}/>
-          )} */}
         </Grid>
         <Grid item>
           <Button variant="outlined" onClick={sendTransaction}>
