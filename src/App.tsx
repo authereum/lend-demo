@@ -12,8 +12,6 @@ import './App.css'
 import theme from './theme'
 
 import Header from './components/Header'
-import ComponentPage from './components/ComponentPage'
-import TransactionComposerPage from './components/TransactionComposerPage'
 import LendPage from './components/LendPage'
 
 function App() {
@@ -26,9 +24,7 @@ function App() {
           <Header />
 
           <Switch>
-            <Route path="/" exact={true} component={ TransactionComposerPage } />
-            <Route path="/lend"  component={ LendPage } />
-            <Route path="/components"  component={ ComponentPage } />
+            <Route path="/" exact={true} component={ LendPage } />
           </Switch>
         </div>
       </ThemeProvider>
